@@ -1,0 +1,58 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Tax-benefit microsimulation models translate statutory rules into
+computable form over individual or household microdata, so that a policy
+question -- who is eligible, what a household would owe or receive, what a
+reform would cost -- can be answered directly rather than estimated from
+aggregates. Established models of this kind carry a canonical citation that
+describes the model once and is then cited by every downstream application:
+\euromod{} has Sutherland and Figari's 2013 description
+\citep{sutherland2013euromod}; \taxsim{} has Feenberg and Coutts's
+introduction to the model.
+\todo{The Feenberg-Coutts TAXSIM citation is named in this repository's seed
+README but its bibliographic record has not been verified against a
+primary source -- see docs/pending-citations.md for what to check before
+adding it to bibliography/references.bib and citing it here with
+\textbackslash citep\{feenberg1993taxsim\}.} \policyengineus{} does not yet
+have this citation, despite implementing a comparable scope of federal,
+state, and local rules: 67 registered programs across taxes and benefit
+categories as of the version surveyed for this outline.
+\evidence{policyengine\_us/programs.yaml; see Section~\ref{sec:coverage}}
+This paper is that description for \policyengineus{}.
+
+\subsection{Versioning}
+\label{sec:versioning}
+
+The paper is explicitly versioned. This is v1: it documents
+\policyengineus{} as deployed in 2026, at the package version pinned in the
+data-and-code-availability statement (Section~\ref{sec:disclosures}). A
+model's rules content changes continuously -- \todo{cite release cadence,
+e.g. commits/releases per year, once confirmed; the CHANGELOG shows patch
+releases roughly weekly as of mid-2026} -- but that is ordinary maintenance,
+not a change to the model's architecture, and does not by itself require a
+new version of this paper. A v2 is warranted when the underlying computation
+changes in a way that would make v1's description inaccurate rather than
+merely dated: for example, a migration of the rules-encoding layer (tracked
+separately under the PolicyEngine/Axiom rules-encoding effort) or a
+wholesale replacement of the microdata foundation's estimation approach.
+Absent such a migration, later editions of this paper should extend v1's
+validation with updated numbers rather than restate its architecture.
+
+\subsection{Scope and contributions}
+\label{sec:scope}
+
+This paper: (1) describes \policyengineus{}'s rules coverage, entity
+structure, and parameter provenance (Section~\ref{sec:model}); (2) describes
+the microdata foundation it runs over, the \populace{} stack, and how that
+data is calibrated to administrative totals (Section~\ref{sec:data}); and
+(3) validates the model's outputs against \taxsim{} cross-runs,
+administrative aggregates, and published \cbo{}/\jct{}/\tpc{} scores where a
+comparable estimate exists (Section~\ref{sec:validation}). Every claim in
+Sections~\ref{sec:model}--\ref{sec:validation} is either backed by an
+existing artifact in the \policyengineus{}, \populace{}, or \policybench{}
+repositories, cited to its file or URL, or marked
+\todo{evidence needed} where no existing artifact was found during outline
+drafting -- this outline is deliberately explicit about which claims are
+already assembled and which require new analysis before v1 can be
+submitted.

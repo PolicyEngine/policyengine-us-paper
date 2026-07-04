@@ -1,0 +1,41 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\todo{Write after Sections~\ref{sec:model}--\ref{sec:validation} are
+complete with real numbers; a discussion drafted against placeholders risks
+asserting conclusions the eventual evidence does not support. Points this
+section should address, each contingent on what the completed validation
+sections actually show:}
+
+\begin{itemize}
+\item \textbf{Where validation is strong and where it is not.} State
+plainly which programs and geographies have committed, reproducible
+validation evidence (federal and state income tax against \taxsim{}; nine
+\soi{} baseline-level backtests; OBBBA and select tax-expenditure provisions
+against \jct{}) and which do not (benefit programs generally have no
+committed cross-model or administrative-outturn comparison surfaced during
+this survey; \todo{confirm this gap is real and not just unsurveyed --
+check policyengine-us's per-program test YAML for benefit programs against
+known administrative benchmarks such as SNAP participation or issuance
+totals before asserting the gap}).
+\item \textbf{Scope of the \tpc{} comparison, if any is added.} No \tpc{}
+comparison evidence was found during outline drafting; if v1 adds one, this
+section must state clearly whether it is new analysis performed for the
+paper or an existing artifact this outline missed.
+\item \textbf{The in-sample/out-of-sample distinction.} Several of the
+\jct{} figures cited in Section~\ref{sec:validation-jct-cbo} are calibration
+targets rather than independent checks; the discussion must not conflate
+"the model was calibrated to match X" with "the model independently
+predicts X."
+\item \textbf{Versioning discipline.} Revisit Section~\ref{sec:versioning}'s
+claim about what does and does not warrant a v2, in light of whatever
+validation drift (or stability) the completed Section~\ref{sec:validation}
+actually shows across the \policyengineus{} versions the paper's cited
+artifacts span.
+\item \textbf{Limitations of the population-view for validation.} If
+Section~\ref{sec:data} draws on population-view or harness concepts from
+the imputation-paper / populace-fit line of work, be explicit about which
+validations in this paper concern rules (statutory computation) versus
+which concern data (microdata representativeness) -- they are validated by
+different evidence and should not be presented as one number.
+\end{itemize}

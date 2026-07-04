@@ -1,0 +1,36 @@
+% Custom commands: product names, acronyms, and the results placeholder.
+
+% --- Product names ---
+\newcommand{\policyengine}{\textsc{PolicyEngine}}
+\newcommand{\policyengineus}{\textsc{PolicyEngine-US}}
+\newcommand{\populace}{\textsc{Populace}}
+\newcommand{\populacefit}{\texttt{populace-fit}}
+\newcommand{\policyenginepy}{\texttt{policyengine.py}}
+\newcommand{\policybench}{\textsc{PolicyBench}}
+
+% --- Incumbent models and data sources ---
+\newcommand{\taxsim}{\textsc{TAXSIM}}
+\newcommand{\euromod}{\textsc{EUROMOD}}
+\newcommand{\cbo}{\textsc{CBO}}
+\newcommand{\jct}{\textsc{JCT}}
+\newcommand{\tpc}{\textsc{TPC}}
+\newcommand{\soi}{\textsc{SOI}}
+
+% --- Survey and data acronyms ---
+\newcommand{\cps}{\textsc{CPS}}
+\newcommand{\asec}{\textsc{ASEC}}
+\newcommand{\acs}{\textsc{ACS}}
+
+% --- Results placeholder ---
+% Every empirical number enters the manuscript through a generated table, a
+% cited existing artifact (docs, dashboards, release dossiers), or an explicit
+% replacement of one of these. It renders loudly so a draft cannot ship with a
+% silent gap, and grep-ably ("TODO") so none survives to submission.
+\newcommand{\todo}[1]{\textbf{[TODO: #1]}}
+
+% --- Evidence-source annotation ---
+% Marks a claim's evidence source inline during drafting (file path, URL, or
+% "TODO(evidence needed)"). Intended to be grep-able and removed before
+% submission once every claim has been replaced by a citation or a generated
+% table reference.
+\newcommand{\evidence}[1]{\textcolor{gray}{\footnotesize [evidence: #1]}}

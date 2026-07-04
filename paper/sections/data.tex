@@ -1,0 +1,82 @@
+\section{Data}
+\label{sec:data}
+
+\subsection{The \populace{} stack}
+\label{sec:populace-stack}
+
+\policyengineus{} runs its microsimulation over microdata built and
+calibrated by \populace{}, PolicyEngine's open-source microdata stack: a
+monorepo of five packages -- \texttt{populace-frame} (the weighted
+sampling-frame kernel), \texttt{populace-fit} (weight-aware conditional
+imputation), \texttt{populace-calibrate} (targets-to-weights calibration),
+\texttt{populace-build} (country build plans and release gates), and
+\texttt{populace-data} (the published population registry and release
+publishing).
+\evidence{/Users/maxghenis/PolicyEngine/populace/README.md, package table}
+The predecessor US enhanced-CPS package, \texttt{policyengine-us-data}, is
+archived; US microdata work is filed against \populace{} going forward.
+\evidence{\texttt{gh repo list PolicyEngine}: policyengine-us-data shows
+\texttt{public, archived}}
+
+\subsection{Calibration to administrative totals}
+\label{sec:calibration}
+
+The microdata is calibrated to a target surface of administrative and
+official aggregates: IRS \soi{}, Census, SSA, CMS, SNAP, and TANF program
+totals, and \cbo{}/\jct{} figures, resolved from an external PolicyEngine
+Ledger consumer-facts feed rather than hardcoded into the calibration
+config.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/fiscal\_target\_references.json,
+\texttt{description} field: "Observed values must be resolved from external
+PolicyEngine Ledger consumer facts; generated IRS, Census, SSA, CMS, SNAP,
+TANF, and CBO targets are compiled directly from the Ledger fact stream."}
+Per-target calibration fit is recorded in \texttt{calibration\_diagnostics.json}
+at release build time: each target row carries the official value
+(\texttt{target}), \policyengineus{}'s calibrated estimate
+(\texttt{final\_estimate}), a \texttt{relative\_error}, and a
+\texttt{within\_tolerance} flag, gated at release time against a named
+tolerance per target family -- for example, federal income tax amount at
+5\% and \soi{}/SSA-keyed EITC, CTC, ACTC, PTC, and taxable Social Security
+targets at 15\%, and SALT at 10\%.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/contract.py,
+\texttt{\_US\_CRITICAL\_TARGET\_FIT\_REQUIREMENTS}; diagnostics schema at
+/Users/maxghenis/PolicyEngine/populace/packages/populace-calibrate/src/populace/calibrate/diagnostics.py}
+
+\todo{Evidence needed for v1 submission: a populated calibration
+diagnostics file (actual relative\_error values for a specific certified
+release) is not committed in the populace working tree as of outline
+drafting -- it is generated at build time and published to the Hugging Face
+dataset \texttt{policyengine/populace-us}. Fetch the diagnostics artifact
+for the release pinned in Section~\ref{sec:disclosures} before writing this
+subsection's numbers; do not hand-copy figures from memory or from a prior
+release.}
+
+\subsection{Release provenance}
+\label{sec:release-provenance}
+
+Each \populace{} US release publishes as an immutable, versioned bundle to
+the Hugging Face dataset \texttt{policyengine/populace-us}
+(release ids of the form \texttt{populace-us-<year>-<gitsha>-<date>}), gated
+on a release contract requiring a build manifest (git commit, non-dirty
+working tree, dataset and calibration artifact SHA-256 hashes), a release
+manifest (compatible core/model package version ranges, artifact locations),
+calibration diagnostics, and (for US) a source-coverage manifest. Release
+metadata additionally includes a TRACE Transparent Research Object (a
+JSON-LD provenance record pinning build inputs and outputs by hash) for at
+least one build.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/contract.py
+(REQUIRED\_RELEASE\_FILES, schema versions); example TRO at
+/Users/maxghenis/PolicyEngine/populace/packages/populace-data/build/us/populace\_us\_2024.trace.tro.jsonld,
+build id \texttt{populace-us-2024-9f1260b-20260611}} Publishing is refused
+if the release's out-of-sample reform validation (Section~\ref{sec:validation})
+has not actually been simulated (the \texttt{out\_of\_sample\_simulated}
+flag).
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/release.py}
+
+\todo{Confirm the specific certified release bundle this paper's v1 pins to
+(the seed README's ``populace-us release dossiers'' language and Max's
+working notes reference a bundle informally as ``4.18.7 (dense)''; this
+identifier does not appear in the populace working tree as of outline
+drafting, so verify it against the Hugging Face dataset's published
+\texttt{latest.json} or a specific release tag before citing a version
+number in the disclosures section).}
