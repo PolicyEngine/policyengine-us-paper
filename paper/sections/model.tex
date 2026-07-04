@@ -1,0 +1,92 @@
+\section{Model description}
+\label{sec:model}
+
+\subsection{Architecture}
+\label{sec:architecture}
+
+\policyengineus{} implements United States federal, state, and local tax and
+benefit rules as Python formulas operating over a typed entity hierarchy
+(person, tax unit, family, household, and program-specific units such as the
+marital unit and the \acs{}/\cps{}-style SPM unit), executed on the
+\texttt{policyengine-core} simulation engine (a fork of OpenFisca-Core).
+\evidence{/Users/maxghenis/PolicyEngine/CLAUDE.md, "Core Infrastructure"
+section: "policyengine-core: Fork of OpenFisca-Core that powers country
+models and apps"} Parameters (rates, thresholds, income limits) are stored
+as YAML, separated from the variable formulas that consume them, so that a
+statutory change updates a parameter value with a dated legislative
+reference rather than a code change.
+\evidence{/Users/maxghenis/PolicyEngine/CLAUDE.md, "Repository Structure
+Patterns" and "Parameter Files (YAML)" sections}
+
+\todo{Confirm and cite: is there a published architecture diagram or
+description of policyengine-core's simulation model (entity graph,
+parameter resolution, vectorized calculation) beyond CLAUDE.md? Check
+policyengine-core's own README/docs before v1 submission.}
+
+\subsection{Rules coverage}
+\label{sec:coverage}
+
+\todo{Add a generated table (label it \texttt{tab:coverage} and reference it
+here as Table~2 or similar once the label resolves) built from
+programs.yaml at manuscript-drafting time, not outline time -- the counts
+below are what outline drafting (2026-07-04) found and will drift as the
+model develops; regenerate before submission, do not hand-copy them into a
+table.} The counts below summarize program coverage as recorded in the
+model's own coverage registry,
+\texttt{policyengine\_us/programs.yaml} (the single source of truth served
+via the \texttt{/us/metadata} API and consumed by the public model coverage
+page). At \policyengineus{} package version 1.690.7 (the version current
+during outline drafting; the version pinned for v1 submission is recorded in
+Section~\ref{sec:disclosures}):
+
+\begin{itemize}
+\item 67 top-level programs are registered, of which 58 are \texttt{status:
+complete}, 6 \texttt{partial}, and 3 \texttt{in\_progress}.
+\evidence{/Users/maxghenis/PolicyEngine/policyengine-us/policyengine\_us/programs.yaml,
+parsed with PyYAML}
+\item By category: Benefits (33), Energy (13), Healthcare (10), Taxes (7),
+Education (2), Housing (1), Legal (1).
+\evidence{same file, \texttt{category} field}
+\item Two entries carry an explicit \taxsim{} validation note in their
+metadata: \texttt{federal\_income\_tax} (``Validated against NBER TAXSIM for
+2022'') and \texttt{state\_income\_tax} (``Validated against NBER TAXSIM for
+2021+'').
+\evidence{same file, \texttt{notes} field on those two entries}
+\item 4{,}527 parameter YAML files and 4{,}701 variable Python files (excluding
+tests and \texttt{\_\_pycache\_\_}).
+\evidence{\texttt{find policyengine\_us/parameters -name "*.yaml" | wc -l};
+\texttt{find policyengine\_us/variables -name "*.py" | grep -v \_\_pycache\_\_
+| grep -v test | wc -l}, run 2026-07-04}
+\item State income tax is implemented for 44 states (of the 41 states plus
+DC that levy a broad-based individual income tax; \todo{reconcile 44 vs. the
+count of states with a statutory income tax -- some entries may be
+non-taxing states with a placeholder tree, or the count may include DC and
+a small number of special cases; verify against Tax Foundation or state
+revenue department listings before asserting a coverage percentage}).
+\evidence{\texttt{ls -d policyengine\_us/parameters/gov/states/*/tax/income |
+wc -l}, run 2026-07-04}
+\end{itemize}
+
+\subsection{Parameter provenance}
+\label{sec:provenance}
+
+\todo{Evidence needed. Confirm whether parameter YAML files uniformly carry
+a \texttt{reference} field citing the statute or regulation, and if so,
+report what fraction do (a spot check or an automated coverage count over
+policyengine\_us/parameters). CLAUDE.md states this is the intended
+convention (\evidence{"Include legislative references" under Parameter
+Files (YAML)}) but the outline-drafting survey did not verify compliance
+at scale. This is exactly the kind of load-bearing quantitative claim the
+paper must not assert without a generated count.}
+
+\subsection{Versioned coverage over time}
+\label{sec:coverage-history}
+
+\todo{Evidence needed. The CHANGELOG (policyengine-us/CHANGELOG.md) records
+patch-level releases at roughly weekly cadence as of mid-2026 (version
+1.690.7 during outline drafting) and 22{,}437 commits total
+\evidence{\texttt{git log --oneline | wc -l}, run 2026-07-04}, but no
+existing artifact tracks program-coverage growth over calendar time (e.g.
+programs registered per year). If this paper wants a coverage-growth figure,
+it must be generated new from git history + programs.yaml snapshots at past
+tags -- flag as new analysis, not assembly, if included in v1.}

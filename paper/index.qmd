@@ -1,0 +1,45 @@
+---
+title-meta: "PolicyEngine US: a versioned model description and validation"
+author-meta: "Max Ghenis"
+date: ""
+bibliography: bibliography/references.bib
+format:
+  html:
+    cite-method: citeproc
+    link-citations: true
+    link-bibliography: true
+  pdf:
+    documentclass: article
+    classoption: 11pt
+    pdf-engine: pdflatex
+    cite-method: natbib
+    biblio-style: plainnat
+    include-in-header:
+      - preamble.tex
+    keep-tex: true
+number-sections: true
+---
+
+<!-- v1 scope note: this manuscript documents PolicyEngine US as deployed in
+2026 (policyengine-us package version pinned in disclosures.tex). Later
+engine migrations (e.g. a rules-encoding rewrite) should produce a v2 paper
+rather than revise this one -- see the repository README's versioning
+rationale. -->
+
+\title{PolicyEngine US: a versioned model description and validation}
+
+\author{
+    Max Ghenis\thanks{PolicyEngine. Corresponding author: max@policyengine.org}
+}
+\date{}
+
+\maketitle
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/model}
+\input{sections/data}
+\input{sections/validation}
+\input{sections/discussion}
+\input{sections/conclusion}
+\input{sections/disclosures}

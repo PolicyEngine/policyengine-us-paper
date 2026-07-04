@@ -1,0 +1,165 @@
+\section{Validation}
+\label{sec:validation}
+
+\subsection{Against \taxsim{}}
+\label{sec:validation-taxsim}
+
+\policyengineus{} is cross-validated against NBER's \taxsim{}35 on Current
+Population Survey tax units. Two independent artifacts carry this
+comparison:
+
+\begin{enumerate}
+\item \textbf{policyengine-us's own validation notebook}
+(\texttt{docs/validation/taxsim.ipynb}) computes, for the 2022 \cps{}, the
+share of tax units whose \policyengineus{}-computed federal income tax (and
+state income tax, for Massachusetts, New York, and Washington) falls within
+\$100 of \taxsim{}35's. \todo{Regenerate this notebook's output at
+manuscript-drafting time and cite the current numbers -- the version seen
+during outline drafting (2026-07-04) is not asserted here because it is not
+this paper's committed evidence artifact; running the notebook is a
+render-only step (no new modeling), so it belongs in v1 rather than as a
+TODO(evidence needed).}
+\evidence{/Users/maxghenis/PolicyEngine/policyengine-us/docs/validation/taxsim.ipynb}
+\item \textbf{The policyengine-taxsim emulator repository} maintains
+checked-in, per-household comparison tables against \taxsim{} for tax years
+2021--2024 (6{,}000 households per year), with exact-match boolean columns
+for federal, state, and combined liability
+(\texttt{federal\_match}, \texttt{state\_match}, \texttt{overall\_match}).
+These are strict exact-match indicators, not tolerance bands, and should be
+reported alongside the \$100-tolerance figures from item 1 with that
+distinction stated explicitly rather than pooled into one number.
+\evidence{/Users/maxghenis/PolicyEngine/policyengine-taxsim/dashboard/build/data/\{2021,2022,2023,2024\}/comparison\_results\_\{year\}.csv}
+\end{enumerate}
+
+\texttt{programs.yaml} records \taxsim{} validation as a property of two
+specific programs -- federal income tax (``Validated against NBER TAXSIM for
+2022'') and state income tax (``Validated against NBER TAXSIM for
+2021+'') -- which this section's numbers should extend rather than
+duplicate.
+\evidence{/Users/maxghenis/PolicyEngine/policyengine-us/policyengine\_us/programs.yaml}
+
+\todo{Open methodological question for v1: the two artifacts use different
+comparison conventions (\$100 tolerance vs.\ exact match) and appear to have
+been generated independently rather than from one shared script. Before
+submission, either reconcile them into one table with both conventions
+reported side by side, or explain why they measure different things (e.g.
+one runs on 2022 only, the other spans 2021--2024; check whether they use
+the same \taxsim{} version and the same CPS extract before treating them as
+comparable).}
+
+\subsection{Against administrative aggregates}
+\label{sec:validation-admin}
+
+\populace{}'s US build includes an out-of-sample backtest of baseline levels
+against published administrative totals for tax concepts that are
+\emph{not} calibration targets: nine benchmark rows compare
+\policyengineus{}'s baseline weighted total for a variable (at the dataset's
+2024 period) against IRS \soi{} Individual Complete Report (Publication
+1304) Tax Year 2023 actuals, from Tables 3.3 and 1.4, with an explicitly
+documented one-year vintage gap.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/soi\_baseline\_levels.json;
+example benchmark row \texttt{soi\_income\_tax\_net}: benchmark value
+\$2{,}042{,}047{,}899{,}000 (TY2023), source IRS SOI Pub 1304 Table 3.3,
+url \url{https://www.irs.gov/pub/irs-soi/23in33ar.xls}}
+
+\todo{Evidence needed: the \emph{result} of this backtest (populace's actual
+baseline total versus each of the nine benchmarks) is not committed in the
+working tree as of outline drafting -- \texttt{soi\_baseline\_levels.json}
+defines the benchmark targets and comparison methodology, but running the
+comparison against a specific certified release is new (light) analysis,
+not assembly. Run it against the release pinned in
+Section~\ref{sec:disclosures} and report all nine rows, not a favorable
+subset.}
+
+\subsection{Against \jct{} and \cbo{} published scores}
+\label{sec:validation-jct-cbo}
+
+The model's own methodology documentation currently lists validation
+against \taxsim{} and IRS \soi{} as a planned (not yet written) section,
+with no mention of \jct{} or \cbo{}.
+\evidence{/Users/maxghenis/PolicyEngine/policyengine-us/docs-quarto/methodology/index.qmd:
+"Planned sections (not yet written): microdata construction (enhanced CPS),
+calibration to administrative totals, behavioral responses, uprating, and
+validation against NBER TAXSIM and IRS SOI."} Existing \populace{} build
+artifacts already go further than that documentation reflects, tying
+specific \policyengineus{}-modeled provisions to named, dated, published
+\jct{} documents:
+
+\begin{itemize}
+\item \textbf{OBBBA provisions vs.\ JCX-35-25.} Nineteen provisions of the
+2025 One Big Beautiful Bill Act that \policyengineus{} models in its
+baseline are each encoded as a counterfactual patch (turning that provision
+off against a pre-OBBBA / TCJA-expiration reference policy), paired with
+\jct{}'s own FY2026 conventional revenue score for that provision from
+JCX-35-25 (published 2025-07-01).
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/obbba\_reforms.json;
+\texttt{jct\_document}: \{id: "JCX-35-25", published: "2025-07-01", url:
+jct.gov/publications/2025/jcx-35-25/\}; example row
+\texttt{obbba\_reduced\_rates}: JCT FY2026 score -\$147{,}679{,}000{,}000}
+The scoring engine that runs these 19 provisions through the
+\policyengineus{} microsimulation and emits a comparison
+(\texttt{reform\_validation.json}, labeled in-sample vs.\ out-of-sample) is
+committed, but \emph{its output for a specific release is not} -- it is
+generated at release-build time, published alongside the release bundle
+rather than checked into the populace working tree.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us\_runtime/reform\_validation.py}
+\item \textbf{Tax expenditures vs.\ JCX-48-24 and Treasury OTA.} Five
+tax-expenditure reform rows (child tax credit, EITC, child and dependent
+care credit, standard deduction, total itemized deductions) carry benchmark
+values from \jct{}'s JCX-48-24 Table 1 or Treasury's FY2025 Tax
+Expenditures report where a comparable figure exists; two rows
+(\texttt{te\_standard\_deduction}, \texttt{te\_itemized\_total}) are marked
+not scored because no comparable published figure exists in either source.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/tax\_expenditure\_reforms.json}
+One of the five (\texttt{te\_eitc}) is flagged \texttt{in\_sample} (used as
+a calibration target rather than an independent check) and must be excluded
+from any claim of independent validation.
+\item \textbf{Tax expenditure calibration targets vs.\ JCT (2024).} Five
+2024 tax-expenditure revenue-loss figures (SALT deduction, medical expense
+deduction, charitable deduction, mortgage interest deduction, qualified
+business income deduction) enter the calibration target surface directly,
+sourced to the Ledger fact stream's JCT family.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/fiscal\_target\_references.json,
+\texttt{target\_references} entries with \texttt{family: "jct"}} These are
+calibration targets, not held-out validation, and belong in
+Section~\ref{sec:calibration} of the model description rather than being
+cited as independent evidence here.
+\end{itemize}
+
+\todo{Evidence needed: no committed artifact in the surveyed repositories
+compares \policyengineus{} to a published \tpc{} estimate. A repository
+named \texttt{bottom-50-tax-analysis} compares a \policyengineus{}-derived
+income-tax aggregate to \cbo{} baseline receipts projections (2024--2026),
+which is a genuine CBO comparison distinct from the JCT comparisons above
+and should be surveyed in full before v1 (this outline verified only that
+the repository and comparison exist, not the specific numbers).
+\evidence{/Users/maxghenis/PolicyEngine/bottom-50-tax-analysis/README.md}
+Several repositories use \cbo{} figures only as \emph{inputs}
+(uprating targets, behavioral elasticities) rather than as a validation
+target and must not be cited as validation evidence: the
+\texttt{parameters/calibration/gov/cbo/} parameter tree and
+\texttt{cbo\_household\_*} variables in policyengine-us, and
+\texttt{cbo-baseline-tracker} and \texttt{deduction-repeal-analysis}, which
+compare CBO to CBO or use CBO elasticities as modeling inputs.}
+
+\subsection{\policybench{}: a distinct claim}
+\label{sec:validation-policybench}
+
+\policybench{} benchmarks language models' ability to predict tax and
+benefit outcomes, using \policyengineus{}'s own output as the reference
+value it scores against -- not administrative data.
+\evidence{/Users/maxghenis/PolicyEngine/policybench/paper/index.qmd, line
+1081: "PolicyBench treats PolicyEngine outputs as benchmark reference
+outputs, not as administrative records."} It is therefore evidence of
+\policyengineus{}'s use as a trusted reference implementation and of the
+model's internal reproducibility infrastructure (versioned, hash-pinned
+snapshots of 100 sampled US scenarios against 19 output specs), but it is
+\emph{not} independent validation against administrative outturns and must
+not be cited as such in this paper.
+\evidence{/Users/maxghenis/PolicyEngine/policybench/paper/snapshot/20260501/us\_scenarios.csv;
+/Users/maxghenis/PolicyEngine/policybench/policybench/benchmark\_specs.json}
+\todo{Decide whether \policybench{} belongs in this section at all, framed
+explicitly as "not independent validation," or is better placed in
+Section~\ref{sec:model} as evidence of reproducibility tooling. Current
+draft keeps it here with an explicit disclaimer so a reader does not
+mistake it for administrative validation.}
