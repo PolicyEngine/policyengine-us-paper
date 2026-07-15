@@ -18,6 +18,128 @@ archived; US microdata work is filed against \populace{} going forward.
 \evidence{\texttt{gh repo list PolicyEngine}: policyengine-us-data shows
 \texttt{public, archived}}
 
+\subsection{Base construction}
+\label{sec:base-construction}
+
+The US base pool is assembled by a staged, checkpointed builder rather
+than a single-process script: each build stage runs as its own subprocess
+(so stage memory is released with the process), the per-target quantile
+regression forest (QRF) imputation chain checkpoints between targets with
+raw prior draws, exact target order, and both random-number streams
+preserved, and the staged pipeline is proven bit-identical to the
+monolithic builder at every stage boundary under a pinned single-thread
+environment.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/406} (merged
+2026-07-13); equivalence proof at
+/Users/maxghenis/PolicyEngine/populace/packages/populace-build/tests/test\_us\_puf\_support\_base\_equivalence.py}
+Checkpoint reuse is guarded by a code-identity lock: the builder
+fingerprints its own executable sources and dependency pins (a SHA-256
+digest over the tool, all package sources, \texttt{pyproject.toml}, and
+\texttt{uv.lock}) and records it as
+\texttt{builder\_code\_identity.source\_sha256} in the run configuration,
+so a resume against checkpoints written by different builder source fails
+with a run-configuration mismatch rather than silently mixing code
+versions.
+\evidence{/Users/maxghenis/PolicyEngine/populace/tools/build\_us\_puf\_support\_base.py,
+\texttt{\_builder\_code\_identity()}; the refusal is pinned by
+\texttt{test\_outer\_stage\_resume\_rejects\_changed\_builder\_code} in
+packages/populace-build/tests/test\_us\_puf\_support\_base\_builder.py}
+QRF fitting is memory-bounded for near-discrete targets: when a target
+variable has 2--32 distinct values, \texttt{max\_samples\_leaf} is bounded
+at 4{,}096 rather than storing full leaf populations, which exposes each
+leaf quantile to multinomial sampling noise while preventing the dense
+leaf-storage growth such targets otherwise cause.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-fit/src/populace/fit/qrf.py,
+\texttt{\_DISCRETE\_Y\_UNIQUE\_MAX} (32) and \texttt{\_DISCRETE\_Y\_LEAF\_BOUND}
+(4096); \url{https://github.com/PolicyEngine/populace/pull/415}}
+
+The base pool represents each source tax unit on two support channels: an
+\asec{} channel holding survey-measured values and a
+\texttt{puf\_tax\_detail} channel holding IRS Public Use File (PUF) donor
+detail. Tax-detail columns that only the PUF measures are populated
+exclusively on the PUF channel -- exactly zero on the \asec{} channel by
+design -- while survey-measured columns are carried on both channels (a
+unit's PUF clone rows carry its survey predictors). \populace{}
+deliberately does not reproduce the retired pipeline's both-half override,
+which overwrote measured survey values with PUF imputations.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/source\_stages.json,
+PUF-detail stage notes (``places this PUF-only detail on its dedicated PUF
+support channel \ldots rather than reproducing the retired both-half
+override''; ``deliberately preserves measured ASEC operations income and
+replaces only the PUF support channel''); channel constants in
+packages/populace-build/src/populace/build/us\_runtime/capital\_gain\_details.py;
+clone-predictor behavior in
+\url{https://github.com/PolicyEngine/populace/pull/425}}
+
+Where the frozen census extracts \populace{} builds from lack a column the
+retired pipeline measured, the column is restored from pinned official
+Census \asec{} public-use archives rather than re-imputed. Each income
+year's person archive is pinned by zip and member SHA-256, byte size, and
+CRC plus row and audit pins; restoration is an exact \texttt{PERIDNUM}
+join within each income year and never predicts a source value. The
+mapping from a \texttt{census\_cps} income year to the \asec{} survey year
+one year later is verified empirically per year: each income-year cohort
+has 100.0\% \texttt{PERIDNUM} coverage in its survey-year-plus-one archive
+and only roughly 33\% (one rotation group) in adjacent vintages, so a
+wrong archive pin fails the exact join loudly instead of silently
+degrading. Two columns are restored this way: weeks unemployed (\asec{}
+\texttt{LKWEEKS}) and educational assistance (\asec{} \texttt{ED\_VAL}).
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/421} (merged
+2026-07-13);
+/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us\_runtime/education\_assistance\_source.py,
+module docstring and \texttt{AsecEducationArchive} pins}
+
+\subsection{The input-coverage contract}
+\label{sec:input-coverage}
+
+A microsimulation input that is silently absent produces a specific
+failure mode: a reform that changes policy on that input scores exactly
+zero, with no error. \populace{}'s US releases encode the guarantee
+against this failure directly, and the gate that enforces it was
+introduced after exactly such a failure -- an SSI resource-limit reform
+(\$10k/\$20k asset limits) scored \$0 on a certified release because the
+three countable-resource asset inputs were absent from the export. The
+coverage gate shipped deliberately red on the then-current artifacts, with
+the asset columns as unconditional requirements.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/369};
+\url{https://github.com/PolicyEngine/populace/issues/368}}
+
+The contract is a versioned, in-repo register covering every input column
+the pinned reference eCPS export populates: each column is either
+\texttt{required} -- it must be present in the release with non-default
+signal -- or a \texttt{reviewed\_exclusion} carrying a written reason and
+a tracking issue. The release gate fails a required column that is absent
+\emph{or} present-but-degenerate (every value at the engine default), and,
+with cannot-rot semantics, fails a reviewed exclusion whose column has
+since been restored; a companion reform-coverage smoke simulates a bound
+reform against the written artifact at release time, so reform
+responsiveness is demonstrated rather than inferred. Register edits are
+themselves guarded: a fail-closed sync guard rejects exclusions for
+columns the build now populates (during the Build~M campaign it correctly
+rejected an exemption proposed for a restored input; the measurement, not
+the register, was fixed).
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/release\_input\_coverage\_manifest.json,
+\texttt{description} field; regenerated by
+tools/build\_us\_release\_input\_coverage\_manifest.py; the
+rejected-exemption episode in
+\url{https://github.com/PolicyEngine/populace/pull/428}}
+
+The coverage campaign then moved the contract from mostly-excluded to
+mostly-required: at Build~J certification (2026-07-10) the US contract
+stood at 70 required columns against 88 reviewed exclusions; the contract
+on \texttt{main} at this revision requires 158 of 166 columns, with 8
+reviewed exclusions -- the contract Build~M builds under. The resulting
+guarantee is the one that matters for reform scoring: a reform touching a
+required-and-populated input cannot silently score zero because the input
+is missing, and the columns for which that guarantee is \emph{not} made
+are enumerated with reasons rather than absent without notice.
+\evidence{Build~J counts:
+\url{https://github.com/PolicyEngine/populace/issues/368}, certification
+verdict comment (``65$\to$70 required / 93$\to$88 exclusions''); current
+counts:
+/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/release\_input\_coverage\_manifest.json,
+\texttt{counts}: 158 required, 8 reviewed\_exclusion, 166 total}
+
 \subsection{Calibration to administrative totals}
 \label{sec:calibration}
 
@@ -42,14 +164,106 @@ targets at 15\%, and SALT at 10\%.
 \texttt{\_US\_CRITICAL\_TARGET\_FIT\_REQUIREMENTS}; diagnostics schema at
 /Users/maxghenis/PolicyEngine/populace/packages/populace-calibrate/src/populace/calibrate/diagnostics.py}
 
-\todo{Evidence needed for v1 submission: a populated calibration
-diagnostics file (actual relative\_error values for a specific certified
-release) is not committed in the populace working tree as of outline
-drafting -- it is generated at build time and published to the Hugging Face
-dataset \texttt{policyengine/populace-us}. Fetch the diagnostics artifact
-for the release pinned in Section~\ref{sec:disclosures} before writing this
-subsection's numbers; do not hand-copy figures from memory or from a prior
-release.}
+For the currently certified US release -- Build~J, release id
+\texttt{populace-us-2024-buildj-sparse-rmloss100-75d5add-20260710T094201Z},
+certified 2026-07-10 against \policyengineus{} 1.764.6 -- the
+certification verdict records a final calibration loss of 0.030843 and
+89.0\% of the registry's 5{,}510 compiled targets within 10\% relative
+error, with every release gate enforced and no bypass flags
+(Section~\ref{sec:release-gates}).
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
+certification verdict comment (2026-07-10): final loss 0.030843;
+within-10\% 0.8900; registry \texttt{091ace02f962}, 5{,}510 compiled
+specs; \texttt{release\_gates.passed=True}, \texttt{failures=[]}}
+
+\todo{For v1 submission, the per-target table behind these headline
+figures (actual relative\_error values by target family) must be fetched
+from the release bundle's \texttt{calibration\_diagnostics.json} on the
+Hugging Face dataset \texttt{policyengine/populace-us} for the release
+pinned in Section~\ref{sec:disclosures}; the headline figures above are
+citable to the certification verdict, but per-target figures must come
+from the published artifact, not from memory or a prior release.}
+
+\todo{Build~M scorecard slot. Build~M is in certification at the time of
+this revision (2026-07-15) and its numbers must not be cited before its
+certification verdict publishes. When it does, record here: the release
+id, final calibration loss, within-10\% share, export-mass parity, and
+reform-probe results, each copied from the verdict. State two
+comparability caveats alongside: (1) Build~M's registry compiles more
+targets than Build~J's 5{,}510 (the take-up campaign added SSA
+recipient-count target families), so within-10\% shares are not directly
+comparable across builds -- more targets is a harder calibration problem;
+and (2) Build~M builds under the 158/8 input-coverage contract
+(Section~\ref{sec:input-coverage}) versus Build~J's 70/88, so its input
+surface is materially wider. Until that verdict, Build~J remains the
+certified default and the only citable scorecard.}
+
+\subsection{Take-up}
+\label{sec:takeup}
+
+Benefit take-up enters the data as seeded stochastic flags (for example
+\texttt{takes\_up\_ssi\_if\_eligible}), restoring parity with the retired
+pipeline's stochastic take-up inputs across programs.
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/312}}
+For SSI the flags are count-calibrated against official recipient counts
+rather than drawn at a fixed rate, with a saturation fallback: the
+assigner draws a population-wide propensity equal to the ratio of the
+official target to modeled candidate capacity (capped at one) and
+count-calibrates candidates, and when every age band saturates (candidate
+capacity below the official target), the reform-domain propensity falls
+back to the observed take-up rate among modeled candidates rather than
+degenerating to certainty for the entire pool; current-law recipiency is
+untouched in both regimes.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/423} (merged
+2026-07-14)}
+
+Because calibration (Section~\ref{sec:calibration}) re-weights the pool
+after flags are assigned, flags assigned under pre-solve weights need not
+remain consistent with the returned weights. The Build~M certification
+campaign proved two structural defects in the original reconciliation
+loop: the registry's national SSI-recipients target and the take-up
+stage's SSA age-band sum are different SSA measures roughly 115{,}000
+apart, so enforcing both simultaneously on the modeled candidate mass gave
+the fixed-point iteration no fixed point; and each pass gated frozen flags
+against weights that had since drifted (a stale pair). The repaired loop
+aligns the band goals to SSA age \emph{shares} applied to the registry
+national total (extracted fail-closed from the compiled specs), and each
+pass re-assigns flags under the current weights, replays the dependent
+health tail, re-materializes the affected targets, and refits the
+calibration; the loop exits only on a fresh pair -- one further assignment
+plus health-tail replay under the returned weights, with the gates run on
+that self-consistent pair and per-band deltas recorded.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/430} (merged
+2026-07-14)}
+
+The fresh-pair exit's swap delta -- the change in selected recipient mass
+when flags are re-assigned under the returned weights -- measures the
+calibration solve's equilibrium residual on the SSI-recipient target
+family, not assignment granularity: the solve balances that family against
+the rest of the target surface (5{,}692 other targets in the diagnosed
+run) and can land short of the national total (about 5.7\% in that run),
+and the fresh assignment then restores recipiency to the official counts.
+The delta is therefore recorded in the reconciliation manifest with the
+assignment-granularity sum as a reference quantity, and gated only against
+runaway, at one tenth of the fresh national total -- a solve that
+effectively abandons the SSI-recipient family still fails closed, with the
+delta in the terminal error.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/431} (merged
+2026-07-15)}
+
+The take-up architecture carries a documented limitation: the eligibility
+model currently produces roughly 4 million persons of modeled SSI
+candidate mass against the registry's national recipients target of
+7{,}404{,}820 (SSA, December 2024), with candidate capacity below the
+official target in every SSA age band. Calibration cannot manufacture
+eligible households that the eligibility model rejects, so recipient-count
+calibration concentrates weight on the candidates that do exist; the
+undercount is tracked as a modeling-side defect, and any v1 claim about
+SSI reform aggregates must state it.
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/424}
+(the 7{,}404{,}820 SSA December-2024 total and the per-band shortfall);
+\url{https://github.com/PolicyEngine/populace/pull/430}
+(``\textasciitilde{}4M of modeled candidate mass'')}
 
 \subsection{Release provenance}
 \label{sec:release-provenance}
@@ -73,10 +287,20 @@ has not actually been simulated (the \texttt{out\_of\_sample\_simulated}
 flag).
 \evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/release.py}
 
-\todo{Confirm the specific certified release bundle this paper's v1 pins to
-(the seed README's ``populace-us release dossiers'' language and Max's
-working notes reference a bundle informally as ``4.18.7 (dense)''; this
-identifier does not appear in the populace working tree as of outline
-drafting, so verify it against the Hugging Face dataset's published
-\texttt{latest.json} or a specific release tag before citing a version
-number in the disclosures section).}
+The currently certified default is the Build~J bundle: the dataset's
+\texttt{latest.json} points to
+\texttt{populace-us-2024-buildj-sparse-rmloss100-75d5add-20260710T094201Z},
+published 2026-07-10 as a tracked, tagged publish and certified for
+consumption through \policyenginepy{}.
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
+``SHIPPED as the certified US default'' comment: ``latest.json ->
+populace-us-2024-buildj-sparse-rmloss100-75d5add-20260710T094201Z (tracked
+publish, tagged)''; certification wiring in
+PolicyEngine/policyengine.py\#470}
+
+\todo{At submission time, re-verify this pin directly against the Hugging
+Face dataset's published \texttt{latest.json} -- Build~M is in
+certification as of this revision and the default may flip -- and record
+the final pin in Section~\ref{sec:disclosures}. The informal identifier
+``4.18.7 (dense)'' from the seed notes is superseded by the release ids
+above and must not be cited.}
