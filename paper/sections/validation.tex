@@ -142,6 +142,101 @@ target and must not be cited as validation evidence: the
 \texttt{cbo-baseline-tracker} and \texttt{deduction-repeal-analysis}, which
 compare CBO to CBO or use CBO elasticities as modeling inputs.}
 
+\subsection{Release gate battery}
+\label{sec:release-gates}
+
+A \populace{} US release must pass a battery of fail-closed gates on the
+built artifact before it can be certified
+(Section~\ref{sec:release-provenance}). These gates validate the
+\emph{data artifact's} construction -- input coverage, mass, and internal
+consistency -- and are distinct from the external validation in
+Sections~\ref{sec:validation-taxsim}--\ref{sec:validation-jct-cbo}:
+passing them shows the release delivers the inputs and weights it
+contracts to deliver, not that the model matches administrative outturns.
+The battery comprises the input-coverage gate and reform-coverage smoke
+(Section~\ref{sec:input-coverage}), an eCPS parity gate, export-mass
+parity, fail-closed target-materialization guards, the take-up
+reconciliation gates (Section~\ref{sec:takeup}), and a zero-support
+exclusion register. For the certified Build~J release, every gate was
+enforced with no bypass flags: export-mass parity passed with 0 of 35
+columns out of band, and the reform-coverage smoke scored the SSI
+\$10k/\$20k resource-limit probe at +\$5.15 billion
+(+\$5{,}153{,}370{,}118 recorded at the gate) -- nonzero, which is the
+failure mode that gate exists to block.
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
+certification verdict comment (2026-07-10): ``export-mass parity (35
+columns) PASS 0/35''; ``reform-coverage smoke (SSI probe) PASS +\$5.15B'';
+shipped-default comment: ``SSI \$10k/\$20k probe +\$5{,}153{,}370{,}118
+enforced at the gate''}
+
+The Build~M certification campaign (in progress at this revision)
+exercised the battery at full scale; three of its stops, each resolved on
+the measurement or receiver side with the artifact-side guard retained,
+document how the gates behave on asymmetries rather than data defects:
+
+\begin{itemize}
+\item \textbf{eCPS parity and typed-weight materialization.} For every
+input layer the pinned incumbent (the retired enhanced \cps{}) populates,
+the candidate release must populate it too; the comparison is share-based,
+so an exported-but-all-zero column fails.
+\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us\_runtime/nonzero\_shares.py,
+module docstring} During Build~M certification the gate flagged
+\texttt{household\_weight} as all-zero on a candidate that had cleared the
+take-up battery. This was an asymmetry between two gates, not a data
+defect: frame weights are typed pipeline state, materialized as a
+\texttt{household\_weight} column only by the H5 export adapter, and the
+input-coverage gate already mirrored that materialization while the parity
+share computation did not. The fix applies the identical mirror in the
+parity measurement (typed household weights measured as the
+\texttt{household\_weight} layer, with a real table column still winning
+when present); the register sync guard had correctly rejected the
+alternative of fencing the column behind an exemption.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/428} (merged
+2026-07-14)}
+\item \textbf{Ledger filter metadata classes.} Target materialization
+fails closed on unknown \texttt{ledger\_filter\_*} metadata keys, because
+a microdata-domain filter silently ignored would corrupt the target.
+Build~M certification stopped on three targets whose ledger facts carry
+\emph{series-identity qualifiers} -- keys that identify which published
+series the registry selected (a NIPA table line; a LIHEAP state-programs
+count), applied at registry fact-selection and restricting nothing at the
+household level. These now pass as inert provenance through a reviewed
+identity class (\texttt{IDENTITY\_LEDGER\_FILTER\_METADATA\_KEYS});
+unknown filter keys remain fatal.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/429} (merged
+2026-07-14)}
+\item \textbf{Voluntary-filing PUF survivors.} The certified frozen
+57{,}240-record sparse selection legitimately keeps only the PUF clone of
+some source units. The voluntary-filing receiver, which previously
+required exactly one \asec{} row per source unit, now prefers the \asec{}
+row and falls back deterministically (channel, then tax-unit id) to the
+first surviving clone row -- clone rows carry their unit's source
+predictors, so the surviving row predicts identically -- while duplicated
+\asec{} rows remain a hard corruption error.
+\evidence{\url{https://github.com/PolicyEngine/populace/pull/425} (merged
+2026-07-14)}
+\end{itemize}
+
+Calibration target cells for which the sparse selection has zero positive
+support -- while the dense parent pool expresses the cell -- are excluded
+only through a reviewed register: 24 cells at Build~J certification, each
+entry carrying a measured per-cell justification recomputed on the
+selection (for example, that the 57{,}240-record selection has zero
+positive Alabama TANF basic-assistance support under \policyengineus{}
+state TANF formulas while the 337{,}704-record dense parent expresses the
+cell) rather than carried forward on trust.
+\evidence{/Users/maxghenis/PolicyEngine/populace/experiments/build\_j\_recert/sparse\_zero\_support\_exclusions\_buildj.json
+(24 cells, per-cell justifications);
+\url{https://github.com/PolicyEngine/populace/issues/368}, certification
+verdict cache-key: ``zero-support exclusions \ldots (24 cells)''}
+
+\todo{Decide how much of this battery belongs in the paper's main text
+versus an appendix. The gates are evidence of the release process's
+integrity, and the paper cites certified-run gate outcomes (0/35, the SSI
+probe) as properties of the release it pins -- but the per-gate incident
+narratives may compress to a table (gate, contract, what it catches,
+Build~J outcome) once v1's page budget is known.}
+
 \subsection{\policybench{}: a distinct claim}
 \label{sec:validation-policybench}
 
