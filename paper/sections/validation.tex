@@ -157,20 +157,25 @@ The battery comprises the input-coverage gate and reform-coverage smoke
 (Section~\ref{sec:input-coverage}), an eCPS parity gate, export-mass
 parity, fail-closed target-materialization guards, the take-up
 reconciliation gates (Section~\ref{sec:takeup}), and a zero-support
-exclusion register. For the certified Build~J release, every gate was
-enforced with no bypass flags: export-mass parity passed with 0 of 35
-columns out of band, and the reform-coverage smoke scored the SSI
-\$10k/\$20k resource-limit probe at +\$5.15 billion
-(+\$5{,}153{,}370{,}118 recorded at the gate) -- nonzero, which is the
-failure mode that gate exists to block.
+exclusion register. For the certified Build~M release, every gate was
+enforced with no bypass flags: export-mass parity passed with 0 of 30
+columns out of band (the reviewed exclusion register having grown to
+seven entries through the Build~M adjudications -- rental, noncash
+charitable, and partnership self-employment in populace\#433; farm income
+in populace\#441/\#442), and the reform-coverage smoke scored the SSI
+\$10k/\$20k resource-limit probe at +\$5.35 billion
+(+\$5{,}350{,}231{,}200 recorded at the gate) and the Keogh
+neutralization probe at +\$118.1 million under the selection-mass
+protection of populace\#445/\#446 -- both nonzero, which is the failure
+mode that gate exists to block. Build~J's corresponding verdict was
+0 of 35 columns and +\$5.15 billion on the SSI probe.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-certification verdict comment (2026-07-10): ``export-mass parity (35
-columns) PASS 0/35''; ``reform-coverage smoke (SSI probe) PASS +\$5.15B'';
-shipped-default comment: ``SSI \$10k/\$20k probe +\$5{,}153{,}370{,}118
-enforced at the gate''}
+Build~M certification verdict comment (2026-07-17): ``export-mass parity
+(30 columns) PASS 0/30''; ``SSI \$10k/\$20k probe +\$5,350,231,200'';
+``keogh neutralization +\$118,140,999''}
 
-The Build~M certification campaign (in progress at this revision)
-exercised the battery at full scale; three of its stops, each resolved on
+The Build~M certification campaign (completed 2026-07-17, sixteen
+release attempts) exercised the battery at full scale; three of its stops, each resolved on
 the measurement or receiver side with the artifact-side guard retained,
 document how the gates behave on asymmetries rather than data defects:
 
