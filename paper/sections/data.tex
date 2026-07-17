@@ -164,17 +164,19 @@ targets at 15\%, and SALT at 10\%.
 \texttt{\_US\_CRITICAL\_TARGET\_FIT\_REQUIREMENTS}; diagnostics schema at
 /Users/maxghenis/PolicyEngine/populace/packages/populace-calibrate/src/populace/calibrate/diagnostics.py}
 
-For the currently certified US release -- Build~J, release id
-\texttt{populace-us-2024-buildj-sparse-rmloss100-75d5add-20260710T094201Z},
-certified 2026-07-10 against \policyengineus{} 1.764.6 -- the
-certification verdict records a final calibration loss of 0.030843 and
-89.0\% of the registry's 5{,}510 compiled targets within 10\% relative
+For the currently certified US release -- Build~M, release id
+\texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
+certified 2026-07-17 against \policyengineus{} 1.764.6 -- the
+certification verdict records a final calibration loss of 0.026655 and
+90.2\% of the registry's 5{,}667 compiled targets within 10\% relative
 error, with every release gate enforced and no bypass flags
-(Section~\ref{sec:release-gates}).
+(Section~\ref{sec:release-gates}). It supersedes Build~J
+(\texttt{75d5add-20260710T094201Z}: 0.030843, 89.0\%, 5{,}510 targets)
+-- a better fit on a larger target surface.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-certification verdict comment (2026-07-10): final loss 0.030843;
-within-10\% 0.8900; registry \texttt{091ace02f962}, 5{,}510 compiled
-specs; \texttt{release\_gates.passed=True}, \texttt{failures=[]}}
+certification verdict comment (2026-07-17): final loss 0.026655;
+within-10\% 0.9021; 5{,}667 compiled specs;
+\texttt{release\_gates.passed=True}, \texttt{failures=[]}}
 
 \todo{For v1 submission, the per-target table behind these headline
 figures (actual relative\_error values by target family) must be fetched
@@ -287,16 +289,16 @@ has not actually been simulated (the \texttt{out\_of\_sample\_simulated}
 flag).
 \evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/release.py}
 
-The currently certified default is the Build~J bundle: the dataset's
+The currently certified default is the Build~M bundle: the dataset's
 \texttt{latest.json} points to
-\texttt{populace-us-2024-buildj-sparse-rmloss100-75d5add-20260710T094201Z},
-published 2026-07-10 as a tracked, tagged publish and certified for
+\texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
+published 2026-07-17 as an immutable tagged publish and certified for
 consumption through \policyenginepy{}.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-``SHIPPED as the certified US default'' comment: ``latest.json ->
-populace-us-2024-buildj-sparse-rmloss100-75d5add-20260710T094201Z (tracked
-publish, tagged)''; certification wiring in
-PolicyEngine/policyengine.py\#470}
+Build~M certification verdict comment (2026-07-17): ``SHIPPED as the
+certified US default: latest.json ->
+populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z'';
+certification wiring in PolicyEngine/policyengine.py\#475}
 
 \todo{At submission time, re-verify this pin directly against the Hugging
 Face dataset's published \texttt{latest.json} -- Build~M is in
