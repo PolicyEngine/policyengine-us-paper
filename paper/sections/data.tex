@@ -164,19 +164,40 @@ targets at 15\%, and SALT at 10\%.
 \texttt{\_US\_CRITICAL\_TARGET\_FIT\_REQUIREMENTS}; diagnostics schema at
 /Users/maxghenis/PolicyEngine/populace/packages/populace-calibrate/src/populace/calibrate/diagnostics.py}
 
-For the currently certified US release -- Build~M, release id
-\texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
-certified 2026-07-17 against \policyengineus{} 1.764.6 -- the
-certification verdict records a final calibration loss of 0.026655 and
-90.2\% of the registry's 5{,}667 compiled targets within 10\% relative
+For the currently certified US release -- Build~N, release id
+\texttt{populace-us-2024-buildn-sparse-rmloss100-c3e378a-20260722T010408Z},
+certified 2026-07-22 against \policyengineus{} 1.764.6 -- the
+certification verdict records a final calibration loss of 0.028242 and
+89.5\% of the registry's 5{,}672 compiled targets within 10\% relative
 error, with every release gate enforced and no bypass flags
-(Section~\ref{sec:release-gates}). It supersedes Build~J
-(\texttt{75d5add-20260710T094201Z}: 0.030843, 89.0\%, 5{,}510 targets)
--- a better fit on a larger target surface.
+(Section~\ref{sec:release-gates}). It supersedes Build~M
+(\texttt{98bf731-20260717T075101Z}: 0.026655, 90.2\%, 5{,}667 targets),
+and the headline pair is deliberately \emph{not} read as a regression:
+Build~N repaired the target surface itself. Two cross-vintage aging
+defects were corrected between the builds -- 51 state net-capital-gains
+rows completed their tax-year-2023-to-2024 chain (+\$298.5B of demanded
+mass) and 467 taxable-interest rows were truthfully re-aged (+\$21.6B) --
+so 518 of the targets Build~N is scored against carry corrected, larger
+values than the ones Build~M matched. Build~N holds 89.5\% within-10\%
+against a strictly harder, truthful surface; the certification verdict
+states the caveat alongside the figures.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-certification verdict comment (2026-07-17): final loss 0.026655;
-within-10\% 0.9021; 5{,}667 compiled specs;
-\texttt{release\_gates.passed=True}, \texttt{failures=[]}}
+certification verdict comment (2026-07-22): final loss 0.028242;
+within-10\% 0.8949; 5{,}672 compiled specs; all 8 build gates passed;
+surface-comparability caveat recorded in the verdict}
+
+The verdict also records the release's known boundaries for downstream
+consumers: a medical-deduction dollar row shipped at the adjudicated
+0.25 broad-fit bound (its national miss decomposes exactly into six
+states' support excess, tracked with owners), a 14-column
+tail-concentration exclusion register with per-column evidence, and a
+congressional-district target surface that ships disabled after a
+measured quality regression. Citing those specific quantities requires
+reading the boundaries paragraph of the verdict.
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
+Build~N verdict, ``Known boundaries'' paragraph;
+\url{https://github.com/PolicyEngine/populace/issues/462},
+medical decomposition comment (2026-07-22)}
 
 \todo{For v1 submission, the per-target table behind these headline
 figures (actual relative\_error values by target family) must be fetched
@@ -185,20 +206,6 @@ Hugging Face dataset \texttt{policyengine/populace-us} for the release
 pinned in Section~\ref{sec:disclosures}; the headline figures above are
 citable to the certification verdict, but per-target figures must come
 from the published artifact, not from memory or a prior release.}
-
-\todo{Build~M scorecard slot. Build~M is in certification at the time of
-this revision (2026-07-15) and its numbers must not be cited before its
-certification verdict publishes. When it does, record here: the release
-id, final calibration loss, within-10\% share, export-mass parity, and
-reform-probe results, each copied from the verdict. State two
-comparability caveats alongside: (1) Build~M's registry compiles more
-targets than Build~J's 5{,}510 (the take-up campaign added SSA
-recipient-count target families), so within-10\% shares are not directly
-comparable across builds -- more targets is a harder calibration problem;
-and (2) Build~M builds under the 158/8 input-coverage contract
-(Section~\ref{sec:input-coverage}) versus Build~J's 70/88, so its input
-surface is materially wider. Until that verdict, Build~J remains the
-certified default and the only citable scorecard.}
 
 \subsection{Take-up}
 \label{sec:takeup}
@@ -289,20 +296,21 @@ has not actually been simulated (the \texttt{out\_of\_sample\_simulated}
 flag).
 \evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/release.py}
 
-The currently certified default is the Build~M bundle: the dataset's
+The currently certified default is the Build~N bundle: the dataset's
 \texttt{latest.json} points to
-\texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
-published 2026-07-17 as an immutable tagged publish and certified for
+\texttt{populace-us-2024-buildn-sparse-rmloss100-c3e378a-20260722T010408Z},
+published 2026-07-22 as an immutable tagged publish and certified for
 consumption through \policyenginepy{}.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-Build~M certification verdict comment (2026-07-17): ``SHIPPED as the
+Build~N certification verdict comment (2026-07-22): ``SHIPPED as the
 certified US default: latest.json ->
-populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z'';
-certification wiring in PolicyEngine/policyengine.py\#475}
+populace-us-2024-buildn-sparse-rmloss100-c3e378a-20260722T010408Z'';
+certification wiring in PolicyEngine/policyengine.py\#481, main
+\texttt{e22367ac}}
 
 \todo{At submission time, re-verify this pin directly against the Hugging
-Face dataset's published \texttt{latest.json} -- Build~M is in
-certification as of this revision and the default may flip -- and record
-the final pin in Section~\ref{sec:disclosures}. The informal identifier
-``4.18.7 (dense)'' from the seed notes is superseded by the release ids
-above and must not be cited.}
+Face dataset's published \texttt{latest.json} -- the certified default
+flips with each certification -- and record the final pin in
+Section~\ref{sec:disclosures}. The informal identifier ``4.18.7 (dense)''
+from the seed notes is superseded by the release ids above and must not
+be cited.}
