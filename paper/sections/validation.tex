@@ -157,8 +157,9 @@ The battery comprises the input-coverage gate and reform-coverage smoke
 (Section~\ref{sec:input-coverage}), an eCPS parity gate, export-mass
 parity, fail-closed target-materialization guards, the take-up law gates
 (Section~\ref{sec:takeup}), and reviewed exclusion registers for
-zero-support cells and tail concentration. For the certified Build~N
-release, every gate was enforced with no bypass flags: all 8 build gates
+zero-support cells and tail concentration. For the certified Build~O
+attempt~1 release -- the first to pass every gate on its first attempt
+-- and for Build~N before it, every gate was enforced with no bypass flags: all 8 build gates
 passed; export-mass parity passed with zero failures on both legs
 (base-frame-versus-reference and export-versus-base-frame); the
 reform-coverage smoke ran 39 of 39 probes green, including the Keogh
@@ -172,11 +173,11 @@ corresponding verdict was 0 of 30 parity columns out of band, +\$5.35
 billion on the SSI \$10k/\$20k probe, and +\$118.1 million on Keogh;
 Build~J's was 0 of 35 columns and +\$5.15 billion on the SSI probe.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-Build~N certification verdict comment (2026-07-22): ``all 8 build gates
-passed''; ``export-mass parity: 0 failures on both legs'';
-``reform-coverage smoke: PASS 39/39 probes'';
-``\texttt{bernoulli\_law\_violation\_count = 0}''; Build~M verdict
-comment (2026-07-17) for the M figures}
+Build~O attempt~1 verdict (2026-07-23) and Build~N verdict (2026-07-22):
+``all 8 build gates passed''; ``export-mass parity: 0 failures on both
+legs''; ``reform-coverage smoke'' green; ``\texttt{bernoulli\_law\_%
+violation\_count = 0}''; Build~M verdict comment (2026-07-17) for the M
+figures}
 
 The preceding Build~M certification campaign (completed 2026-07-17, sixteen
 release attempts) exercised the battery at full scale; three of its stops, each resolved on

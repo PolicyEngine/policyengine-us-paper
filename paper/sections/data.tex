@@ -164,40 +164,46 @@ targets at 15\%, and SALT at 10\%.
 \texttt{\_US\_CRITICAL\_TARGET\_FIT\_REQUIREMENTS}; diagnostics schema at
 /Users/maxghenis/PolicyEngine/populace/packages/populace-calibrate/src/populace/calibrate/diagnostics.py}
 
-For the currently certified US release -- Build~N, release id
-\texttt{populace-us-2024-buildn-sparse-rmloss100-c3e378a-20260722T010408Z},
-certified 2026-07-22 against \policyengineus{} 1.764.6 -- the
-certification verdict records a final calibration loss of 0.028242 and
-89.5\% of the registry's 5{,}672 compiled targets within 10\% relative
+For the currently certified US release -- Build~O attempt~1, release id
+\texttt{populace-us-2024-buildo-sparse-rmloss100-22bd902-20260722T232627Z},
+certified 2026-07-23 against \policyengineus{} 1.764.6 -- the
+certification verdict records a final calibration loss of 0.028131 and
+89.6\% of the registry's 5{,}672 compiled targets within 10\% relative
 error, with every release gate enforced and no bypass flags
-(Section~\ref{sec:release-gates}). It supersedes Build~M
-(\texttt{98bf731-20260717T075101Z}: 0.026655, 90.2\%, 5{,}667 targets),
-and the headline pair is deliberately \emph{not} read as a regression:
-Build~N repaired the target surface itself. Two cross-vintage aging
-defects were corrected between the builds -- 51 state net-capital-gains
-rows completed their tax-year-2023-to-2024 chain (+\$298.5B of demanded
-mass) and 467 taxable-interest rows were truthfully re-aged (+\$21.6B) --
-so 518 of the targets Build~N is scored against carry corrected, larger
-values than the ones Build~M matched. Build~N holds 89.5\% within-10\%
-against a strictly harder, truthful surface; the certification verdict
-states the caveat alongside the figures.
+(Section~\ref{sec:release-gates}) -- the first release in the program's
+history to pass every gate on its first attempt, following the
+builder/publisher register unification. It supersedes Build~N
+(\texttt{c3e378a-20260722T010408Z}: 0.028242, 89.5\%) on the same
+truthful target surface, so this pair \emph{is} directly comparable --
+unlike N-versus-M, where two cross-vintage aging repairs (51 state
+net-capital-gains rows, +\$298.5B; 467 taxable-interest rows, +\$21.6B)
+made Build~N's surface strictly harder than the one Build~M matched
+(0.026655, 90.2\%, 5{,}667 targets). Build~O also extends input
+coverage to 163 required columns, adding the adult-dependent-care and
+self-employed-health-premium input stages; on every prior release a
+reform binding through adult-care expenses scored exactly zero.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-certification verdict comment (2026-07-22): final loss 0.028242;
-within-10\% 0.8949; 5{,}672 compiled specs; all 8 build gates passed;
-surface-comparability caveat recorded in the verdict}
+Build~O attempt~1 certification verdict comment (2026-07-23): final loss
+0.028131; within-10\% 0.8956; 5{,}672 compiled specs; first-attempt
+gate pass; coverage 163/163; N and M figures from their verdicts}
 
 The verdict also records the release's known boundaries for downstream
-consumers: a medical-deduction dollar row shipped at the adjudicated
-0.25 broad-fit bound (its national miss decomposes exactly into six
-states' support excess, tracked with owners), a 14-column
-tail-concentration exclusion register with per-column evidence, a
+consumers, stated in full at certification time: an SSI aged-band
+baseline defect carried from Build~N (65+ recipients approximately
+0.94M against SSA's 2.42M; the take-up seeding froze band thresholds on
+pre-calibration weights and the calibration then moved the candidate
+capacity from under it -- a successor build with the corrected
+band-enforcement system supersedes this default when certified); a
+medical-deduction dollar row at the adjudicated 0.25 broad-fit bound;
+a mortgage-interest dollar level running roughly 25--30\% hot against
+both its SOI row and its JCT expenditure row (returns within 2.5\%,
+so a per-holder level defect -- material for analyses of itemized
+composition even where the itemized total, within 5\% across four
+independent SOI tables, is not); a 14-column tail-concentration
+exclusion register with per-column evidence; and a
 congressional-district target surface that ships disabled after a
-measured quality regression, and -- added by verdict addendum -- an
-SSI aged-band baseline regression (65+ recipients 0.94M against SSA's
-2.42M; the take-up seeding froze band thresholds on pre-calibration
-weights and the calibration then moved the candidate capacity from
-under it). Citing those specific quantities requires reading the
-boundaries paragraphs of the verdict, including the addendum.
+measured quality regression. Citing those specific quantities requires
+reading the boundaries paragraphs of the verdict.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
 Build~N verdict, ``Known boundaries'' paragraph;
 \url{https://github.com/PolicyEngine/populace/issues/462},
@@ -300,17 +306,15 @@ has not actually been simulated (the \texttt{out\_of\_sample\_simulated}
 flag).
 \evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/release.py}
 
-The currently certified default is the Build~N bundle: the dataset's
-\texttt{latest.json} points to
-\texttt{populace-us-2024-buildn-sparse-rmloss100-c3e378a-20260722T010408Z},
+The currently certified default is the Build~O attempt~1 bundle: the
+dataset's \texttt{latest.json} points to
+\texttt{populace-us-2024-buildo-sparse-rmloss100-22bd902-20260722T232627Z},
 published 2026-07-22 as an immutable tagged publish and certified for
 consumption through \policyenginepy{}.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-Build~N certification verdict comment (2026-07-22): ``SHIPPED as the
-certified US default: latest.json ->
-populace-us-2024-buildn-sparse-rmloss100-c3e378a-20260722T010408Z'';
-certification wiring in PolicyEngine/policyengine.py\#481, main
-\texttt{e22367ac}}
+Build~O attempt~1 certification verdict and flip receipt (2026-07-23);
+certification wiring in PolicyEngine/policyengine.py\#483, main
+\texttt{08ae783a}}
 
 \todo{At submission time, re-verify this pin directly against the Hugging
 Face dataset's published \texttt{latest.json} -- the certified default
