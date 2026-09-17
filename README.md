@@ -120,3 +120,7 @@ Requires `quarto` and a TeX distribution with `pdflatex` on `PATH`. CI
   verified.
 - `CONTRIBUTING.md` — the evidence rule and review-tier doctrine this
   repository follows.
+
+## License
+
+Code in this repository is released under the [MIT License](LICENSE). Original text and figures are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) with attribution to PolicyEngine. Third-party data and materials keep their own terms.
