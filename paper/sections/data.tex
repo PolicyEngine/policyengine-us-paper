@@ -17,6 +17,17 @@ The predecessor US enhanced-CPS package, \texttt{policyengine-us-data}, is
 archived; US microdata work is filed against \populace{} going forward.
 \evidence{\texttt{gh repo list PolicyEngine}: policyengine-us-data shows
 \texttt{public, archived}}
+The stack was renamed \textbf{Microcosm} in August 2026 (repository
+\texttt{PolicyEngine/microcosm}, import namespace \texttt{microcosm.*};
+the companion facts feed renamed Ledger$\to$Chronicle): identifiers
+frozen into published v1 artifacts -- release ids of the
+\texttt{populace-us-*} line, dataset filenames, and Logbook rows -- keep
+their original names verbatim, so citations to published releases remain
+stable across the rename.
+\evidence{repository redirect \texttt{PolicyEngine/populace}
+$\to$ \texttt{PolicyEngine/microcosm}; rename receipts in
+\url{https://github.com/PolicyEngine/microcosm} README and the 2026-08-08
+rename PRs; frozen-identifier policy per the rename decision record}
 
 \subsection{Base construction}
 \label{sec:base-construction}
@@ -88,6 +99,82 @@ degrading. Two columns are restored this way: weeks unemployed (\asec{}
 2026-07-13);
 /Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us\_runtime/education\_assistance\_source.py,
 module docstring and \texttt{AsecEducationArchive} pins}
+
+\subsection{The stacked multi-survey pool (successor architecture, in evaluation)}
+\label{sec:stacked-pool}
+
+The single-spine base of Section~\ref{sec:base-construction} is being
+succeeded by a \emph{stacked} pool that represents two survey channels
+directly: an ordered \asec{}~$\cup$~ACS spine in which each channel
+retains its own observed geography (\asec{}: state; ACS: PUMA), with
+household mass anchored on the \asec{} channel and string storage
+canonicalized at the assembly boundary after a measured
+representation-divergence defect.
+\evidence{\texttt{assemble\_stacked\_spine} in
+microcosm/packages/microcosm-build/src/microcosm/build/us\_runtime/stacked\_spine.py
+(\texttt{mass\_anchor\_channel} defaults to
+\texttt{BASE\_ASEC\_SUPPORT\_CHANNEL = "asec"});
+canonicalization boundaries in
+\url{https://github.com/PolicyEngine/microcosm/pull/672}}
+PUF tax detail attaches as a named support role
+(\texttt{puf\_tax\_detail}, clone index~1) rather than a raw clone
+integer; cross-channel gaps are filled by chained quantile-regression
+forests fitted target-at-a-time with banked models (each target
+conditions on the base predictors plus previously drawn targets in
+declared order), and late tax-detail transfers run through a
+producer DAG whose current registry spans 19 bounded target groups
+covering 70 targets, the largest family
+(\texttt{puf\_tax\_itemization}) running as five declared batches over
+37 targets.
+\evidence{support-role constants in us\_runtime/support\_provenance.py
+(\texttt{PUF\_TAX\_DETAIL\_CLONE\_INDEX = 1}); banked chain API in
+packages/microcosm-fit/src/microcosm/fit/qrf.py; batch ledger in
+specs/us\_imputation\_lineage.yaml and
+docs/us-multispine-operator-ordering.md}
+Benefit take-up follows a reviewed per-program contract of 13 programs
+whose mechanisms range from measured (\texttt{Medicare}) through
+seeded rates (TANF, EITC) to anchored state count-calibration (SNAP,
+Medicaid); releases carry a rung ladder of sample fractions
+(\texttt{f001}--\texttt{f100}) and every build appends a row to a
+strict-linear, tamper-evident Logbook chain.
+\evidence{us/take\_up\_contract.json (13 programs) and
+us\_runtime/snap\_state\_take\_up.py;
+rung grammar in tools/build\_us\_multispine\_pool.py after
+\url{https://github.com/PolicyEngine/microcosm/pull/694}}
+
+The stacked pool is \emph{in evaluation}, and no stacked artifact is a
+certified default: its release battery -- a 131-target completeness
+surface with by-origin incidence, quantile-envelope, and
+boolean-liveness legs -- currently reports a known-red systematic core
+that is the object of the calibration campaign, and evaluation builds
+publish with the battery verdict attached rather than through the
+certification gate.
+\evidence{battery constants in microcosm us\_runtime;
+evaluation-build gates and manifests in the build receipts
+(\texttt{*.gates.json} written on every run)}
+The campaign also produced a governance change: a participation
+variable (CHAMPVA coverage) was found to be imputed from a predictor
+set carrying no eligibility information -- age, sex, geography, and
+income only -- an omission invisible in stage-level dashboards, and the
+response is a spec-driven build authority (one declared YAML bundle
+compiled to an executable plan; Python configuration constants deleted)
+whose RFC has passed two rounds of cross-family adversarial review and
+whose schema set requires every participation target to declare
+target-specific eligibility-concept coverage, making the defect class a
+load-time failure.
+\evidence{\url{https://github.com/PolicyEngine/microcosm/pull/698}
+(RFC v3 + both review records on the branch);
+predictor-set finding in the 2026-08-15 session receipts}
+
+\todo{When the first full-scale stacked evaluation builds land (an
+on-chain 25\% rung built 2026-08-16 and a 100\% build resumed from
+sealed checkpoints), report here: the CHAMPVA donor-support counts at
+both rungs against the $\sim$704{,}000 CRS-reported enrollee benchmark,
+the battery leg counts by origin, and the per-congressional-district
+support distribution (25\% rung: median 1{,}742, minimum 777, no
+district under 500, from the off-chain probe) -- all cited to the
+builds' published gates and manifest receipts, never to session
+memory.}
 
 \subsection{The input-coverage contract}
 \label{sec:input-coverage}
@@ -164,19 +251,74 @@ targets at 15\%, and SALT at 10\%.
 \texttt{\_US\_CRITICAL\_TARGET\_FIT\_REQUIREMENTS}; diagnostics schema at
 /Users/maxghenis/PolicyEngine/populace/packages/populace-calibrate/src/populace/calibrate/diagnostics.py}
 
-For the currently certified US release -- Build~M, release id
-\texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
-certified 2026-07-17 against \policyengineus{} 1.764.6 -- the
-certification verdict records a final calibration loss of 0.026655 and
-90.2\% of the registry's 5{,}667 compiled targets within 10\% relative
+For the currently certified US release -- Build~O attempt~1, release id
+\texttt{populace-us-2024-buildo-sparse-rmloss100-22bd902-20260722T232627Z},
+certified 2026-07-23 against \policyengineus{} 1.764.6 -- the
+certification verdict records a final calibration loss of 0.028131 and
+89.6\% of the registry's 5{,}672 compiled targets within 10\% relative
 error, with every release gate enforced and no bypass flags
-(Section~\ref{sec:release-gates}). It supersedes Build~J
-(\texttt{75d5add-20260710T094201Z}: 0.030843, 89.0\%, 5{,}510 targets)
--- a better fit on a larger target surface.
+(Section~\ref{sec:release-gates}) -- the first release in the program's
+history to pass every gate on its first attempt, following the
+builder/publisher register unification. It supersedes Build~N
+(\texttt{c3e378a-20260722T010408Z}: 0.028242, 89.5\%) on the same
+truthful target surface, so this pair \emph{is} directly comparable --
+unlike N-versus-M, where two cross-vintage aging repairs (51 state
+net-capital-gains rows, +\$298.5B; 467 taxable-interest rows, +\$21.6B)
+made Build~N's surface strictly harder than the one Build~M matched
+(0.026655, 90.2\%, 5{,}667 targets). Build~O also extends input
+coverage to 163 required columns, adding the adult-dependent-care and
+self-employed-health-premium input stages; on every prior release a
+reform binding through adult-care expenses scored exactly zero.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-certification verdict comment (2026-07-17): final loss 0.026655;
-within-10\% 0.9021; 5{,}667 compiled specs;
-\texttt{release\_gates.passed=True}, \texttt{failures=[]}}
+Build~O attempt~1 certification verdict comment (2026-07-23): final loss
+0.028131; within-10\% 0.8956; 5{,}672 compiled specs; first-attempt
+gate pass; coverage 163/163; N and M figures from their verdicts}
+
+The verdict also records the release's known boundaries for downstream
+consumers, stated in full at certification time: an SSI aged-band
+baseline defect carried from Build~N (65+ recipients approximately
+0.94M against SSA's 2.42M; the take-up seeding froze band thresholds on
+pre-calibration weights and the calibration then moved the candidate
+capacity from under it -- a successor build with the corrected
+band-enforcement system supersedes this default when certified); a
+medical-deduction dollar row at the adjudicated 0.25 broad-fit bound;
+a mortgage-interest dollar level running roughly 25--30\% hot against
+both its SOI row and its JCT expenditure row (returns within 2.5\%,
+so a per-holder level defect -- material for analyses of itemized
+composition even where the itemized total, within 5\% across four
+independent SOI tables, is not); a 14-column tail-concentration
+exclusion register with per-column evidence; and a
+congressional-district target surface that ships disabled after a
+measured quality regression. Citing those specific quantities requires
+reading the boundaries paragraphs of the verdict.
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
+Build~N verdict, ``Known boundaries'' paragraph;
+\url{https://github.com/PolicyEngine/populace/issues/462},
+medical decomposition comment (2026-07-22)}
+
+Build~O was superseded on 2026-07-28 by \textbf{Build~P attempt~11}
+(release id
+\texttt{populace-us-2024-buildp-sparse-rmloss100-cae8640-20260728T011454Z},
+published \texttt{--no-latest}, certified through
+\policyenginepy{}\#489, and flipped to the certified default the same
+day). Build~P landed the mortgage-interest repair arc: the
+per-record split of mortgage interest from the raw-PUF donor seam
+(PR~\#561, four review rounds) took the mortgage critical gate from
++20.4\% under Build~8c to $-0.00\%$, with the mis-specified
+other-income loss rows root-caused to an \soi{}/PUF concept mismatch
+(Form~4797 semantics) and excluded at the registry level with reviewed
+reasons rather than gate widening (PR~\#564). Its certification
+scorecard records global within-10\% fit of 95.76\% on its compiled
+register.
+\evidence{\url{https://github.com/PolicyEngine/populace/issues/507},
+attempt-11 scorecard comment (2026-07-28);
+\url{https://github.com/PolicyEngine/policyengine.py/pull/489}
+(certification, merged 2026-07-28); PRs \#561, \#564}
+\todo{Build~P's register basis differs from Build~O's (four
+other-income rows registry-dropped), so the 95.76\% and 89.6\% figures
+are not same-register comparable; the same-register comparison and the
+compiled-target count must be taken from the published
+\texttt{calibration\_diagnostics.json} rather than the verdict prose.}
 
 \todo{For v1 submission, the per-target table behind these headline
 figures (actual relative\_error values by target family) must be fetched
@@ -185,20 +327,6 @@ Hugging Face dataset \texttt{policyengine/populace-us} for the release
 pinned in Section~\ref{sec:disclosures}; the headline figures above are
 citable to the certification verdict, but per-target figures must come
 from the published artifact, not from memory or a prior release.}
-
-\todo{Build~M scorecard slot. Build~M is in certification at the time of
-this revision (2026-07-15) and its numbers must not be cited before its
-certification verdict publishes. When it does, record here: the release
-id, final calibration loss, within-10\% share, export-mass parity, and
-reform-probe results, each copied from the verdict. State two
-comparability caveats alongside: (1) Build~M's registry compiles more
-targets than Build~J's 5{,}510 (the take-up campaign added SSA
-recipient-count target families), so within-10\% shares are not directly
-comparable across builds -- more targets is a harder calibration problem;
-and (2) Build~M builds under the 158/8 input-coverage contract
-(Section~\ref{sec:input-coverage}) versus Build~J's 70/88, so its input
-surface is materially wider. Until that verdict, Build~J remains the
-certified default and the only citable scorecard.}
 
 \subsection{Take-up}
 \label{sec:takeup}
@@ -289,20 +417,19 @@ has not actually been simulated (the \texttt{out\_of\_sample\_simulated}
 flag).
 \evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/release.py}
 
-The currently certified default is the Build~M bundle: the dataset's
-\texttt{latest.json} points to
-\texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
-published 2026-07-17 as an immutable tagged publish and certified for
+The currently certified default is the Build~O attempt~1 bundle: the
+dataset's \texttt{latest.json} points to
+\texttt{populace-us-2024-buildo-sparse-rmloss100-22bd902-20260722T232627Z},
+published 2026-07-22 as an immutable tagged publish and certified for
 consumption through \policyenginepy{}.
 \evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
-Build~M certification verdict comment (2026-07-17): ``SHIPPED as the
-certified US default: latest.json ->
-populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z'';
-certification wiring in PolicyEngine/policyengine.py\#475}
+Build~O attempt~1 certification verdict and flip receipt (2026-07-23);
+certification wiring in PolicyEngine/policyengine.py\#483, main
+\texttt{08ae783a}}
 
 \todo{At submission time, re-verify this pin directly against the Hugging
-Face dataset's published \texttt{latest.json} -- Build~M is in
-certification as of this revision and the default may flip -- and record
-the final pin in Section~\ref{sec:disclosures}. The informal identifier
-``4.18.7 (dense)'' from the seed notes is superseded by the release ids
-above and must not be cited.}
+Face dataset's published \texttt{latest.json} -- the certified default
+flips with each certification -- and record the final pin in
+Section~\ref{sec:disclosures}. The informal identifier ``4.18.7 (dense)''
+from the seed notes is superseded by the release ids above and must not
+be cited.}
