@@ -2,7 +2,7 @@
 
 The canonical, versioned model paper for PolicyEngine US: description and
 validation of the full tax-benefit microsimulation model — rules coverage,
-data (the populace stack), and validation against administrative outturns
+data (the Microcosm stack), and validation against administrative outturns
 and incumbent models (TAXSIM, and against CBO, JCT, and TPC published scores where comparable).
 
 Every serious model has this citation (EUROMOD's Sutherland–Figari 2013,
@@ -10,7 +10,7 @@ TAXSIM's Feenberg–Coutts); PolicyEngine US does not yet. The paper is
 *versioned*: v1 documents the model as deployed in 2026; engine migrations
 later produce a v2 rather than invalidating v1.
 
-Validation assets to assemble from: the policyengine-us test suite and YAML case law, TAXSIM cross-validation work, PolicyBench task provenance, and the populace-us release dossiers.
+Validation assets to assemble from: the policyengine-us test suite and YAML case law, TAXSIM cross-validation work, PolicyBench task provenance, and the Microcosm US release dossiers.
 
 Target venue: International Journal of Microsimulation (diamond open
 access); arXiv preprint on completion.
@@ -35,7 +35,7 @@ not a silent gap.
    extend v1), and states scope.
 3. **Model description** (`sections/model.tex`) — architecture,
    rules-coverage counts, parameter provenance, coverage-over-time.
-4. **Data** (`sections/data.tex`) — the populace stack, calibration to
+4. **Data** (`sections/data.tex`) — the Microcosm stack, calibration to
    administrative totals, release provenance (Hugging Face-published
    bundles, the release contract, TRACE/TRO provenance records).
 5. **Validation** (`sections/validation.tex`) — against TAXSIM, against
@@ -57,18 +57,18 @@ not a silent gap.
   itself is existing evidence).
 - `policyengine-taxsim/dashboard/build/data/{2021..2024}/comparison_results_{year}.csv`
   — 6,000 households/year, exact-match TAXSIM comparison.
-- `populace/.../us/soi_baseline_levels.json` — 9 IRS SOI (Pub 1304)
+- `microcosm/.../us/soi_baseline_levels.json` — 9 IRS SOI (Pub 1304)
   out-of-sample baseline-level benchmarks, with exact dollar values and
   source URLs.
-- `populace/.../us/obbba_reforms.json` — 19 OBBBA provisions scored against
+- `microcosm/.../us/obbba_reforms.json` — 19 OBBBA provisions scored against
   JCT document JCX-35-25 (published 2025-07-01), with per-provision JCT
   dollar scores and source citations.
-- `populace/.../us/tax_expenditure_reforms.json` — 5 tax-expenditure reform
+- `microcosm/.../us/tax_expenditure_reforms.json` — 5 tax-expenditure reform
   rows benchmarked against JCT JCX-48-24 / Treasury OTA (one flagged
   in-sample; exclude from independent-validation claims).
-- `populace/.../us/fiscal_target_references.json` — 5 JCT tax-expenditure
+- `microcosm/.../us/fiscal_target_references.json` — 5 JCT tax-expenditure
   calibration targets (these are calibration, not independent validation).
-- `populace/packages/populace-data/src/populace/data/contract.py` — the
+- `microcosm/packages/microcosm-data/src/microcosm/data/contract.py` — the
   release contract's per-target calibration tolerance gates (schema only;
   populated numbers are published to Hugging Face, not committed in-repo).
 
@@ -76,7 +76,7 @@ not a silent gap.
 
 - A populated calibration-diagnostics artifact for a specific certified
   release (numbers live on Hugging Face `policyengine/populace-us`, not in
-  the populace working tree — fetch, don't fabricate).
+  the Microcosm working tree — fetch, don't fabricate).
 - A committed, printed PE-vs-JCT/CBO results table (the scoring
   infrastructure and targets are committed; the output of running it
   against a specific release is not).

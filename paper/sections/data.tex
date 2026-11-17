@@ -1,20 +1,20 @@
 \section{Data}
 \label{sec:data}
 
-\subsection{The \populace{} stack}
-\label{sec:populace-stack}
+\subsection{The \microcosm{} stack}
+\label{sec:microcosm-stack}
 
 \policyengineus{} runs its microsimulation over microdata built and
-calibrated by \populace{}, PolicyEngine's open-source microdata stack: a
-monorepo of five packages -- \texttt{populace-frame} (the weighted
-sampling-frame kernel), \texttt{populace-fit} (weight-aware conditional
-imputation), \texttt{populace-calibrate} (targets-to-weights calibration),
-\texttt{populace-build} (country build plans and release gates), and
-\texttt{populace-data} (the published population registry and release
+calibrated by \microcosm{}, PolicyEngine's open-source microdata stack: a
+monorepo of five packages -- \texttt{microcosm-frame} (the weighted
+sampling-frame kernel), \texttt{microcosm-fit} (weight-aware conditional
+imputation), \texttt{microcosm-calibrate} (targets-to-weights calibration),
+\texttt{microcosm-build} (country build plans and release gates), and
+\texttt{microcosm-data} (the published population registry and release
 publishing).
-\evidence{/Users/maxghenis/PolicyEngine/populace/README.md, package table}
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/README.md, package table}
 The predecessor US enhanced-CPS package, \texttt{policyengine-us-data}, is
-archived; US microdata work is filed against \populace{} going forward.
+archived; US microdata work is filed against \microcosm{} going forward.
 \evidence{\texttt{gh repo list PolicyEngine}: policyengine-us-data shows
 \texttt{public, archived}}
 
@@ -29,9 +29,9 @@ raw prior draws, exact target order, and both random-number streams
 preserved, and the staged pipeline is proven bit-identical to the
 monolithic builder at every stage boundary under a pinned single-thread
 environment.
-\evidence{\url{https://github.com/PolicyEngine/populace/pull/406} (merged
+\evidence{\url{https://github.com/PolicyEngine/microcosm/pull/406} (merged
 2026-07-13); equivalence proof at
-/Users/maxghenis/PolicyEngine/populace/packages/populace-build/tests/test\_us\_puf\_support\_base\_equivalence.py}
+/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-build/tests/test\_us\_puf\_support\_base\_equivalence.py}
 Checkpoint reuse is guarded by a code-identity lock: the builder
 fingerprints its own executable sources and dependency pins (a SHA-256
 digest over the tool, all package sources, \texttt{pyproject.toml}, and
@@ -40,18 +40,18 @@ digest over the tool, all package sources, \texttt{pyproject.toml}, and
 so a resume against checkpoints written by different builder source fails
 with a run-configuration mismatch rather than silently mixing code
 versions.
-\evidence{/Users/maxghenis/PolicyEngine/populace/tools/build\_us\_puf\_support\_base.py,
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/tools/build\_us\_puf\_support\_base.py,
 \texttt{\_builder\_code\_identity()}; the refusal is pinned by
 \texttt{test\_outer\_stage\_resume\_rejects\_changed\_builder\_code} in
-packages/populace-build/tests/test\_us\_puf\_support\_base\_builder.py}
+packages/microcosm-build/tests/test\_us\_puf\_support\_base\_builder.py}
 QRF fitting is memory-bounded for near-discrete targets: when a target
 variable has 2--32 distinct values, \texttt{max\_samples\_leaf} is bounded
 at 4{,}096 rather than storing full leaf populations, which exposes each
 leaf quantile to multinomial sampling noise while preventing the dense
 leaf-storage growth such targets otherwise cause.
-\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-fit/src/populace/fit/qrf.py,
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-fit/src/microcosm/fit/qrf.py,
 \texttt{\_DISCRETE\_Y\_UNIQUE\_MAX} (32) and \texttt{\_DISCRETE\_Y\_LEAF\_BOUND}
-(4096); \url{https://github.com/PolicyEngine/populace/pull/415}}
+(4096); \url{https://github.com/PolicyEngine/microcosm/pull/415}}
 
 The base pool represents each source tax unit on two support channels: an
 \asec{} channel holding survey-measured values and a
@@ -59,19 +59,19 @@ The base pool represents each source tax unit on two support channels: an
 detail. Tax-detail columns that only the PUF measures are populated
 exclusively on the PUF channel -- exactly zero on the \asec{} channel by
 design -- while survey-measured columns are carried on both channels (a
-unit's PUF clone rows carry its survey predictors). \populace{}
+unit's PUF clone rows carry its survey predictors). \microcosm{}
 deliberately does not reproduce the retired pipeline's both-half override,
 which overwrote measured survey values with PUF imputations.
-\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/source\_stages.json,
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-build/src/microcosm/build/us/source\_stages.json,
 PUF-detail stage notes (``places this PUF-only detail on its dedicated PUF
 support channel \ldots rather than reproducing the retired both-half
 override''; ``deliberately preserves measured ASEC operations income and
 replaces only the PUF support channel''); channel constants in
-packages/populace-build/src/populace/build/us\_runtime/capital\_gain\_details.py;
+packages/microcosm-build/src/microcosm/build/us\_runtime/capital\_gain\_details.py;
 clone-predictor behavior in
-\url{https://github.com/PolicyEngine/populace/pull/425}}
+\url{https://github.com/PolicyEngine/microcosm/pull/425}}
 
-Where the frozen census extracts \populace{} builds from lack a column the
+Where the frozen census extracts \microcosm{} builds from lack a column the
 retired pipeline measured, the column is restored from pinned official
 Census \asec{} public-use archives rather than re-imputed. Each income
 year's person archive is pinned by zip and member SHA-256, byte size, and
@@ -84,9 +84,9 @@ and only roughly 33\% (one rotation group) in adjacent vintages, so a
 wrong archive pin fails the exact join loudly instead of silently
 degrading. Two columns are restored this way: weeks unemployed (\asec{}
 \texttt{LKWEEKS}) and educational assistance (\asec{} \texttt{ED\_VAL}).
-\evidence{\url{https://github.com/PolicyEngine/populace/pull/421} (merged
+\evidence{\url{https://github.com/PolicyEngine/microcosm/pull/421} (merged
 2026-07-13);
-/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us\_runtime/education\_assistance\_source.py,
+/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-build/src/microcosm/build/us\_runtime/education\_assistance\_source.py,
 module docstring and \texttt{AsecEducationArchive} pins}
 
 \subsection{The input-coverage contract}
@@ -94,15 +94,15 @@ module docstring and \texttt{AsecEducationArchive} pins}
 
 A microsimulation input that is silently absent produces a specific
 failure mode: a reform that changes policy on that input scores exactly
-zero, with no error. \populace{}'s US releases encode the guarantee
+zero, with no error. \microcosm{}'s US releases encode the guarantee
 against this failure directly, and the gate that enforces it was
 introduced after exactly such a failure -- an SSI resource-limit reform
 (\$10k/\$20k asset limits) scored \$0 on a certified release because the
 three countable-resource asset inputs were absent from the export. The
 coverage gate shipped deliberately red on the then-current artifacts, with
 the asset columns as unconditional requirements.
-\evidence{\url{https://github.com/PolicyEngine/populace/pull/369};
-\url{https://github.com/PolicyEngine/populace/issues/368}}
+\evidence{\url{https://github.com/PolicyEngine/microcosm/pull/369};
+\url{https://github.com/PolicyEngine/microcosm/issues/368}}
 
 The contract is a versioned, in-repo register covering every input column
 the pinned reference eCPS export populates: each column is either
@@ -118,11 +118,11 @@ themselves guarded: a fail-closed sync guard rejects exclusions for
 columns the build now populates (during the Build~M campaign it correctly
 rejected an exemption proposed for a restored input; the measurement, not
 the register, was fixed).
-\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/release\_input\_coverage\_manifest.json,
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-build/src/microcosm/build/us/release\_input\_coverage\_manifest.json,
 \texttt{description} field; regenerated by
 tools/build\_us\_release\_input\_coverage\_manifest.py; the
 rejected-exemption episode in
-\url{https://github.com/PolicyEngine/populace/pull/428}}
+\url{https://github.com/PolicyEngine/microcosm/pull/428}}
 
 The coverage campaign then moved the contract from mostly-excluded to
 mostly-required: at Build~J certification (2026-07-10) the US contract
@@ -134,10 +134,10 @@ required-and-populated input cannot silently score zero because the input
 is missing, and the columns for which that guarantee is \emph{not} made
 are enumerated with reasons rather than absent without notice.
 \evidence{Build~J counts:
-\url{https://github.com/PolicyEngine/populace/issues/368}, certification
+\url{https://github.com/PolicyEngine/microcosm/issues/368}, certification
 verdict comment (``65$\to$70 required / 93$\to$88 exclusions''); current
 counts:
-/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/release\_input\_coverage\_manifest.json,
+/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-build/src/microcosm/build/us/release\_input\_coverage\_manifest.json,
 \texttt{counts}: 158 required, 8 reviewed\_exclusion, 166 total}
 
 \subsection{Calibration to administrative totals}
@@ -148,7 +148,7 @@ official aggregates: IRS \soi{}, Census, SSA, CMS, SNAP, and TANF program
 totals, and \cbo{}/\jct{} figures, resolved from an external PolicyEngine
 Ledger consumer-facts feed rather than hardcoded into the calibration
 config.
-\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-build/src/populace/build/us/fiscal\_target\_references.json,
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-build/src/microcosm/build/us/fiscal\_target\_references.json,
 \texttt{description} field: "Observed values must be resolved from external
 PolicyEngine Ledger consumer facts; generated IRS, Census, SSA, CMS, SNAP,
 TANF, and CBO targets are compiled directly from the Ledger fact stream."}
@@ -160,9 +160,9 @@ at release build time: each target row carries the official value
 tolerance per target family -- for example, federal income tax amount at
 5\% and \soi{}/SSA-keyed EITC, CTC, ACTC, PTC, and taxable Social Security
 targets at 15\%, and SALT at 10\%.
-\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/contract.py,
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-data/src/microcosm/data/contract.py,
 \texttt{\_US\_CRITICAL\_TARGET\_FIT\_REQUIREMENTS}; diagnostics schema at
-/Users/maxghenis/PolicyEngine/populace/packages/populace-calibrate/src/populace/calibrate/diagnostics.py}
+/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-calibrate/src/microcosm/calibrate/diagnostics.py}
 
 For the currently certified US release -- Build~M, release id
 \texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
@@ -173,7 +173,7 @@ error, with every release gate enforced and no bypass flags
 (Section~\ref{sec:release-gates}). It supersedes Build~J
 (\texttt{75d5add-20260710T094201Z}: 0.030843, 89.0\%, 5{,}510 targets)
 -- a better fit on a larger target surface.
-\evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
+\evidence{\url{https://github.com/PolicyEngine/microcosm/issues/368},
 certification verdict comment (2026-07-17): final loss 0.026655;
 within-10\% 0.9021; 5{,}667 compiled specs;
 \texttt{release\_gates.passed=True}, \texttt{failures=[]}}
@@ -206,7 +206,7 @@ certified default and the only citable scorecard.}
 Benefit take-up enters the data as seeded stochastic flags (for example
 \texttt{takes\_up\_ssi\_if\_eligible}), restoring parity with the retired
 pipeline's stochastic take-up inputs across programs.
-\evidence{\url{https://github.com/PolicyEngine/populace/issues/312}}
+\evidence{\url{https://github.com/PolicyEngine/microcosm/issues/312}}
 For SSI the flags are count-calibrated against official recipient counts
 rather than drawn at a fixed rate, with a saturation fallback: the
 assigner draws a population-wide propensity equal to the ratio of the
@@ -216,7 +216,7 @@ capacity below the official target), the reform-domain propensity falls
 back to the observed take-up rate among modeled candidates rather than
 degenerating to certainty for the entire pool; current-law recipiency is
 untouched in both regimes.
-\evidence{\url{https://github.com/PolicyEngine/populace/pull/423} (merged
+\evidence{\url{https://github.com/PolicyEngine/microcosm/pull/423} (merged
 2026-07-14)}
 
 Because calibration (Section~\ref{sec:calibration}) re-weights the pool
@@ -235,7 +235,7 @@ health tail, re-materializes the affected targets, and refits the
 calibration; the loop exits only on a fresh pair -- one further assignment
 plus health-tail replay under the returned weights, with the gates run on
 that self-consistent pair and per-band deltas recorded.
-\evidence{\url{https://github.com/PolicyEngine/populace/pull/430} (merged
+\evidence{\url{https://github.com/PolicyEngine/microcosm/pull/430} (merged
 2026-07-14)}
 
 The fresh-pair exit's swap delta -- the change in selected recipient mass
@@ -250,7 +250,7 @@ assignment-granularity sum as a reference quantity, and gated only against
 runaway, at one tenth of the fresh national total -- a solve that
 effectively abandons the SSI-recipient family still fails closed, with the
 delta in the terminal error.
-\evidence{\url{https://github.com/PolicyEngine/populace/pull/431} (merged
+\evidence{\url{https://github.com/PolicyEngine/microcosm/pull/431} (merged
 2026-07-15)}
 
 The take-up architecture carries a documented limitation: the eligibility
@@ -262,15 +262,15 @@ eligible households that the eligibility model rejects, so recipient-count
 calibration concentrates weight on the candidates that do exist; the
 undercount is tracked as a modeling-side defect, and any v1 claim about
 SSI reform aggregates must state it.
-\evidence{\url{https://github.com/PolicyEngine/populace/issues/424}
+\evidence{\url{https://github.com/PolicyEngine/microcosm/issues/424}
 (the 7{,}404{,}820 SSA December-2024 total and the per-band shortfall);
-\url{https://github.com/PolicyEngine/populace/pull/430}
+\url{https://github.com/PolicyEngine/microcosm/pull/430}
 (``\textasciitilde{}4M of modeled candidate mass'')}
 
 \subsection{Release provenance}
 \label{sec:release-provenance}
 
-Each \populace{} US release publishes as an immutable, versioned bundle to
+Each \microcosm{} US release publishes as an immutable, versioned bundle to
 the Hugging Face dataset \texttt{policyengine/populace-us}
 (release ids of the form \texttt{populace-us-<year>-<gitsha>-<date>}), gated
 on a release contract requiring a build manifest (git commit, non-dirty
@@ -280,21 +280,21 @@ calibration diagnostics, and (for US) a source-coverage manifest. Release
 metadata additionally includes a TRACE Transparent Research Object (a
 JSON-LD provenance record pinning build inputs and outputs by hash) for at
 least one build.
-\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/contract.py
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-data/src/microcosm/data/contract.py
 (REQUIRED\_RELEASE\_FILES, schema versions); example TRO at
-/Users/maxghenis/PolicyEngine/populace/packages/populace-data/build/us/populace\_us\_2024.trace.tro.jsonld,
+/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-data/build/us/populace\_us\_2024.trace.tro.jsonld,
 build id \texttt{populace-us-2024-9f1260b-20260611}} Publishing is refused
 if the release's out-of-sample reform validation (Section~\ref{sec:validation})
 has not actually been simulated (the \texttt{out\_of\_sample\_simulated}
 flag).
-\evidence{/Users/maxghenis/PolicyEngine/populace/packages/populace-data/src/populace/data/release.py}
+\evidence{/Users/maxghenis/PolicyEngine/microcosm/packages/microcosm-data/src/microcosm/data/release.py}
 
 The currently certified default is the Build~M bundle: the dataset's
 \texttt{latest.json} points to
 \texttt{populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z},
 published 2026-07-17 as an immutable tagged publish and certified for
 consumption through \policyenginepy{}.
-\evidence{\url{https://github.com/PolicyEngine/populace/issues/368},
+\evidence{\url{https://github.com/PolicyEngine/microcosm/issues/368},
 Build~M certification verdict comment (2026-07-17): ``SHIPPED as the
 certified US default: latest.json ->
 populace-us-2024-buildm-sparse-rmloss100-98bf731-20260717T075101Z'';
